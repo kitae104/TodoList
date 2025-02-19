@@ -30,7 +30,6 @@ dependencies {
 
     implementation 'org.modelmapper:modelmapper:3.2.1'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
-    implementation 'com.github.pagehelper:pagehelper-spring-boot-starter:2.1.0'
 
     testImplementation 'org.springframework.security:spring-security-test'
     compileOnly 'org.projectlombok:lombok'

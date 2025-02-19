@@ -1,12 +1,12 @@
-####################################
-# ?? ? ???? ?? ??
+﻿####################################
+# Port & Project Name
 ####################################
 server:
-  port: 8080                    # ?? ??
+  port: 8080                    # 포트 설정
   servlet:
     encoding:
-      charset: UTF-8          # ?? ??? ??
-      force: true             # ?? ??
+      charset: UTF-8
+      force: true
 
 spring:
   application:
@@ -14,13 +14,13 @@ spring:
 
   devtools:
     livereload:
-      enabled: true           # ?? ??? ??
+      enabled: true
     restart:
-      enabled: true           # ?? ??? ??
-      preserve-session: true  # ?? ?? ??
+      enabled: true
+      preserve-session: true  # session
 
   ####################################
-  # ?????? ??
+  # Database
   ####################################
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -29,19 +29,19 @@ spring:
     password: 1234
 
   ####################################
-  # JPA ??
+  # JPA
   ####################################
   jpa:
     open-in-view: true      #
     hibernate:
       ddl-auto: update      # create, update, ...
       naming:
-        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy # ????? ???? ??? ??
-    show-sql: true          # SQL ?? ???
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    show-sql: true
     properties:
       hibernate:
-        format_sql: true    # ?? ???? ???
-        default_batch_fetch_size: 1000  # ??? ??? ??? ? in ?? ?? ??
+        format_sql: true
+        default_batch_fetch_size: 1000
 
   ####################################
   # Security User
@@ -52,7 +52,7 @@ spring:
       password: 1111
 
 ####################################
-# ?? ?? ??
+# Log
 ####################################
 logging:
   level:
@@ -60,20 +60,17 @@ logging:
       hibernate:
         type:
           descriptor:
-            sql: trace  # ???? ??? ???? ??
+            sql: trace
 
 ####################################
-# Swagger ??
+# Swagger
 ####################################
 springdoc:
   swagger-ui:
-    path: /api-test  # swagger-ui ?? ??? ?? ??, ?? ??? ???? http://localhost:8080/swagger-ui/index.html? ????? ?.
-
-    groups-order: DESC # path, query, body, response ??? ??
-
-    tags-sorter: alpha # ??? ??? ??? ??
-
-    operations-sorter: method  # delete - get - patch - post - put ??? ??, alpha? ???? ??? ??? ?? ??
-
+    path: /api-test  # Swagger UI의 접속 경로를 설정. 기본적으로 http://localhost:8080/swagger-ui/index.html에서 접근 가능하지만, /api-test로 변경됨.
+    groups-order: DESC # API 그룹 정렬 순서를 내림차순(DESC)으로 설정.
+    tags-sorter: alpha # API 태그들을 알파벳 순서로 정렬.
+    operations-sorter: method  # HTTP 메서드(delete - get - patch - post - put) 순서대로 정렬. "alpha"로 설정하면 알파벳 순으로 정렬됨.
   paths-to-match:
-    - /** # swagger-ui? ??? api? ????? ??
+    - /** # Swagger UI에서 문서화할 API의 경로를 지정. 모든 API(`/**`)를 포함하도록 설정.
+

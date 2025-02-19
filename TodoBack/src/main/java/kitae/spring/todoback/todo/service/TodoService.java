@@ -6,6 +6,9 @@ import kitae.spring.todoback.todo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,13 +22,12 @@ public class TodoService {
     private final ModelMapper modelMapper;
 
     // 할일 목록 조회
-    public List<TodoDto> getTodoList() {
-        List<Todo> todosList = todoRepository.findAll();
-        List<TodoDto> todoDtosList = todosList.stream()
-                .map(todos -> modelMapper.map(todos, TodoDto.class))
-                .toList();
-        System.out.println("todoDtosList = " + todoDtosList);
-        return todoDtosList;
+    public Page<TodoDto> getTodoList(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size); // pageable 객체 생성
+        Page<Todo> todoListPage = todoRepository.findAllByOrderByIdDesc(pageable);
+        Page<TodoDto> todoDtoListPage = todoListPage.map(todo -> modelMapper.map(todo, TodoDto.class));
+        System.out.println("todoDtoListPage = " + todoDtoListPage);
+        return todoDtoListPage;
     }
 
     // 할일 상세 조회
