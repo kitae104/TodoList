@@ -12,12 +12,14 @@ const TodoContainer = () => {
 
   // event handler
   // 자식에서 처리한 이벤트를 부모에게 전달하기 위한 함수 -> props로 자식으로 전달
-  const onAdd = async () => {
-    console.log('add : ' + input)
+  const onAdd = async (e) => {
+    e.preventDefault()  // submit 이벤트의 기본 동작을 막음
+    console.log('데이터 추가 : ' + input)
 
     const data = {
-      name: input === '' ? '제목없음' : input,
-      status: false
+      name: input === '' ? '제목없음' : input,  
+      status: 0,   
+      seq: 1
     }
 
     const options = {
@@ -36,13 +38,14 @@ const TodoContainer = () => {
     } catch(err) {
       console.error(err)
     }    
+    getList()    // 서버로 부터 할일 목록을 다시 받아옴
     setInput('')  // 입력창 초기화 
-    //getList()    // 서버로 부터 할일 목록을 다시 받아옴
   }
 
   // 입력창에 입력한 내용을 state에 저장
   const onChange = (e) => {
     setInput(e.target.value)
+    // console.log(e.target.value)  // 입력창에 입력한 내용(체크용)
   }
 
   const onRemove = async (id) => {

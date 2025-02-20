@@ -1,18 +1,21 @@
-import React from 'react'
+import React from 'react';
 
-const TodoInput = ({onAdd}) => {
+const TodoInput = ({ input, onChange, onAdd }) => {
   return (
     <div>
-      <form action="" className='form'>
-        <input type='text' 
-          placeholder='할 일 입력'
-          className='input'   
-                  
+      <form action="" className="form" onSubmit={onAdd}>
+        <input type="text" 
+          placeholder="할 일 입력" 
+          className="input" 
+          value={input}
+          onChange={onChange}
         />
-        <button type='submit' className='btn' onClick={onAdd}>추가</button>
+        <button type="submit" className="btn">
+          추가
+        </button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default TodoInput
+export default TodoInput;

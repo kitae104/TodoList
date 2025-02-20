@@ -56,7 +56,6 @@ public class TodoController {
     @PostMapping()
     public ResponseEntity<?> addTodo(@RequestBody TodoDto todoDto) {
         try {
-            log.info("=================todoDto = " + todoDto);
             boolean result = todoService.addTodo(todoDto);
             if (result) {
                 return new ResponseEntity<>("SUCCESS", HttpStatus.CREATED);

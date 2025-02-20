@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -46,8 +47,9 @@ public class TodoService {
 
     // 할일 추가
     public boolean addTodo(TodoDto todoDto) {
+        UUID uuid = UUID.randomUUID();
         Todo todo = Todo.builder()
-                .code(todoDto.getCode())
+                .code(uuid.toString())
                 .name(todoDto.getName())
                 .status(todoDto.getStatus())
                 .seq(todoDto.getSeq())
