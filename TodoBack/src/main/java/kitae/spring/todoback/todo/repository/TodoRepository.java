@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface TodoRepository extends JpaRepository<Todo, Long> {
     Optional<Todo> findByCode(String code);
 
-    Page<Todo> findAllByOrderByIdDesc(Pageable pageable);
+    Page<Todo> findAllByOrderByStatusAscSeqAsc(Pageable pageable);
 }

@@ -24,7 +24,7 @@ public class TodoService {
     // 할일 목록 조회
     public Page<TodoDto> getTodoList(int page, int size) {
         Pageable pageable = PageRequest.of(page, size); // pageable 객체 생성
-        Page<Todo> todoListPage = todoRepository.findAllByOrderByIdDesc(pageable);
+        Page<Todo> todoListPage = todoRepository.findAllByOrderByStatusAscSeqAsc(pageable);
         Page<TodoDto> todoDtoListPage = todoListPage.map(todo -> modelMapper.map(todo, TodoDto.class));
         System.out.println("todoDtoListPage = " + todoDtoListPage);
         return todoDtoListPage;

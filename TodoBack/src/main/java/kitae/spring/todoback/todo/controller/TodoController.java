@@ -14,6 +14,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin("*")
 @RequestMapping("/todo")
 public class TodoController {
 
@@ -22,7 +23,7 @@ public class TodoController {
     @GetMapping("")
     public ResponseEntity<?> getTodosList(
         @RequestParam(defaultValue = "0") int page, // 현재 페이지
-        @RequestParam(defaultValue = "5") int size // 크기
+        @RequestParam(defaultValue = "10") int size // 크기
     ) {
         try {
             Page<TodoDto> todoDtoList = todoService.getTodoList(page, size);
