@@ -84,4 +84,9 @@ public class TodoService {
         todoRepository.deleteById(id);
         return true;
     }
+
+    public boolean completeAll() {
+        todoRepository.completeAll();
+        return true;
+    }
 }

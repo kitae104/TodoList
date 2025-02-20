@@ -23,7 +23,7 @@ public class Todo extends BaseEntity {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "boolean default false")
     private Boolean status;
 
     @Column(nullable = false, updatable = false, columnDefinition = "int default 0")

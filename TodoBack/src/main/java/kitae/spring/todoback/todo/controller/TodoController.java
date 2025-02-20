@@ -71,7 +71,16 @@ public class TodoController {
     public ResponseEntity<?> updateTodo(@RequestBody TodoDto todoDto) {
         log.info("todoDto = " + todoDto);
         try {
-            boolean result = todoService.updateTodoById(todoDto);
+            Long id = todoDto.getId();
+            boolean result = false;
+
+            if(id == null) {
+                log.info("completeAll");
+                result = todoService.completeAll();
+            } else {
+                log.info("updateTodoById");
+                result = todoService.updateTodoById(todoDto);
+            }
             if (result) {
                 return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
             } else {
