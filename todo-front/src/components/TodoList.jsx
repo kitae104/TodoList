@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import TodoItem from './TodoItem';
 
-const TodoList = ({ todoList, onToggle, onRemove, onAdd }) => {
+const TodoList = ({ todoList, onToggle, onRemove }) => {
   // 스크롤 이벤트 처리를 위한 state
   const [page, setPage] = useState(0);
   const [newList, setNewList] = useState([]);
-
+  
   // 다음 페이지 데이터를 가져오는 함수
   const addList = (page) => {
     fetch(`http://localhost:8080/todo?page=${page}`)
@@ -42,6 +42,10 @@ const TodoList = ({ todoList, onToggle, onRemove, onAdd }) => {
   };
 
   useEffect(() => {
+    setNewList(todoList)
+  }, [todoList]);
+
+  useEffect(() => {
     // 스크롤 이벤트 등록
     const todoListElement = document.querySelector('.todoList')
     if( todoListElement ) {
@@ -53,12 +57,12 @@ const TodoList = ({ todoList, onToggle, onRemove, onAdd }) => {
         todoListElement.removeEventListener('scroll', handleScroll)
       }
     }
-  })
+  });
 
   return (
     <div>
       <ul className="todoList">
-        {todoList.map((todo) => (
+        {newList.map((todo) => (
             <TodoItem
               key={todo.id}
               todo={todo}
@@ -67,19 +71,7 @@ const TodoList = ({ todoList, onToggle, onRemove, onAdd }) => {
             />
           ))
         }
-      </ul>
-      <ul id='newList'>
-        {newList.map((todo) => 
-          (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              onToggle={onToggle}
-              onRemove={onRemove}            
-            />
-          ))
-        }
-      </ul>
+      </ul>      
     </div>  
   );
 };
