@@ -91,10 +91,17 @@ public class TodoController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTodoById(@PathVariable Long id) {
+    @DeleteMapping({"/{id}", ""})
+    public ResponseEntity<?> deleteTodoById(@PathVariable(value="id", required = false) Long id) {
         try {
-            boolean result = todoService.deleteTodoById(id);
+            boolean result = false;
+            if(id == null) {
+                log.info("deleteAll");
+                result = todoService.deleteAll();
+            } else {
+                log.info("deleteTodoById");
+                result = todoService.deleteTodoById(id);
+            }
             if (!result) {
                 return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
             } else {

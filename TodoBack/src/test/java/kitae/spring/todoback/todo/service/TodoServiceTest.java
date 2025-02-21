@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -15,9 +17,10 @@ class TodoServiceTest {
     private TodoService todoService;
 
     public void makeTodoList(){
-        for (int i = 0; i < 12; i++) {
+        UUID uuid = UUID.randomUUID();
+        for (int i = 0; i < 30; i++) {
             TodoDto todoDto = TodoDto.builder()
-                    .code("code-" + i)
+                    .code(uuid.toString())
                     .name("오늘 할 일" + i)
                     .seq(i)
                     .status(false)
