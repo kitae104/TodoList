@@ -11,6 +11,8 @@ server:
 spring:
   application:
     name: TodoBack
+  config:
+    import: "optional:classpath:application-db.yml"
 
   devtools:
     livereload:
@@ -18,15 +20,6 @@ spring:
     restart:
       enabled: true
       preserve-session: true  # session
-
-  ####################################
-  # Database
-  ####################################
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/todo_list?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true&useSSL=false
-    username: root
-    password: 1234
 
   ####################################
   # JPA
