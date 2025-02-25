@@ -13,10 +13,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class BoardDto {
-    private Long id;
-    private String title;
-    private String writer;
-    private String content;
-    private LocalDateTime regTime;
-    private LocalDateTime updateTime;
+  private Long id;
+  private String title;
+  private String writer;
+  private String content;
+  private LocalDateTime regTime;
+  private LocalDateTime updateTime;
 }
