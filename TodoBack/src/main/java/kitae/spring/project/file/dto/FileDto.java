@@ -3,6 +3,7 @@ package kitae.spring.project.file.dto;
 import jakarta.persistence.Column;
 import kitae.spring.project.file.entity.FileType;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -24,4 +25,5 @@ public class FileDto {
   private Long seq; // 순서
   private LocalDateTime regTime;  // 등록일
   private LocalDateTime updateTime; // 수정일
+  private MultipartFile file;  // 파일 데이터
 }

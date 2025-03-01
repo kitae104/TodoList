@@ -3,6 +3,7 @@ package kitae.spring.project.board.dto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Lob;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -19,4 +20,5 @@ public class BoardDto {
   private String content;
   private LocalDateTime regTime;
   private LocalDateTime updateTime;
+
 }

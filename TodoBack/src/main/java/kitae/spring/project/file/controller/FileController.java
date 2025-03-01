@@ -1,18 +1,16 @@
 package kitae.spring.project.file.controller;
 
 import kitae.spring.project.file.dto.FileDto;
-import kitae.spring.project.file.entity.File;
+import kitae.spring.project.file.entity.FileEntity;
 import kitae.spring.project.file.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -29,7 +27,7 @@ public class FileController {
 //          @RequestParam(defaultValue = "10") int size // 크기
   ) {
     try {
-      List<File> fileList = fileService.getFileList();
+      List<FileEntity> fileList = fileService.getFileList();
       List<FileDto> fileDtoList = fileList.stream()
               .map(file -> modelMapper.map(file, FileDto.class))
               .toList();
@@ -88,7 +86,7 @@ public class FileController {
     }
   }
 
-  @DeleteMapping({"/{id}", ""})
+  @DeleteMapping("/{id}")
   public ResponseEntity<?> deleteFileById(@PathVariable(value="id", required = false) Long id) {
     try {
       boolean result = false;
