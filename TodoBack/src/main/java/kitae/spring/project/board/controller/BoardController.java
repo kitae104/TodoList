@@ -2,12 +2,19 @@ package kitae.spring.project.board.controller;
 
 import kitae.spring.project.board.dto.BoardDto;
 import kitae.spring.project.board.service.BoardService;
+import kitae.spring.project.file.dto.FileDto;
+import kitae.spring.project.file.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -17,10 +24,11 @@ import org.springframework.web.bind.annotation.*;
 public class BoardController {
 
   private final BoardService boardService;
+  private final FileService fileService;
 
   // 게시판 리스트 조회
   @GetMapping("")
-  public ResponseEntity<?> getTodosList(
+  public ResponseEntity<?> getBoardList(
           @RequestParam(defaultValue = "0") int page, // 현재 페이지
           @RequestParam(defaultValue = "10") int size // 크기
   ) {
@@ -34,20 +42,52 @@ public class BoardController {
 
   // 게시판 상세 조회
   @GetMapping("/{id}")
-  public ResponseEntity<?> getTodoById(@PathVariable Long id) {
+  public ResponseEntity<?> getBoardById(@PathVariable Long id) {
     try {
       BoardDto boardDto = boardService.getBoardById(id);
-      return new ResponseEntity<>(boardDto, HttpStatus.OK);
+
+      // 파일 리스트 조회
+      FileDto fileDto = new FileDto();
+      fileDto.setParentTable("board");
+      fileDto.setParentNo(boardDto.getId());
+      List<FileDto> fileList = fileService.listByParent(fileDto);
+      Map<String, Object> response = new HashMap<>();
+      response.put("board", boardDto);
+      response.put("fileList", fileList);
+      return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (Exception e) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  // 게시판 추가
-  @PostMapping()
-  public ResponseEntity<?> addTodo(@RequestBody BoardDto boardDto) {
+  /*
+   * @RequestBody 붙일 때 안 붙일 때 차이
+   * - @RequestBody ⭕ : application/json, application/xml
+   * - @RequestBody ❌ : multipart/form-data, applcation/x-www-form-urlencoded
+   *
+   */
+  // 조건부 게시판 추가(application/json) 인 경우
+  @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> insertBoardJson(@RequestBody BoardDto boardDto) {
+    log.info("게시글 등록 - application/json 경우 " + boardDto);
     try {
-      boolean result = boardService.addBoard(boardDto);
+      boolean result = boardService.insertBoard(boardDto);
+      if (result) {
+        return new ResponseEntity<>("SUCCESS", HttpStatus.CREATED);
+      } else {
+        return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
+      }
+    } catch (Exception e) {
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  // 조건부 게시판 추가(multipart/form-data) 인 경우
+  @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<?> insertBoardFormData(BoardDto boardDto) {
+    log.info("게시글 등록 - multipart/form-data 경우 " + boardDto);
+    try {
+      boolean result = boardService.insertBoard(boardDto);
       if (result) {
         return new ResponseEntity<>("SUCCESS", HttpStatus.CREATED);
       } else {
@@ -59,7 +99,7 @@ public class BoardController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<?> updateTodo(@RequestBody BoardDto boardDto) {
+  public ResponseEntity<?> updateBoard(@RequestBody BoardDto boardDto) {
     log.info("BoardDto = " + boardDto);
     try {
       Long id = boardDto.getId();
@@ -68,7 +108,7 @@ public class BoardController {
       if(id == null) {
         throw new IllegalArgumentException("id is null");
       } else {
-        log.info("updateTodoById");
+        log.info("updateBoardById");
         result = boardService.updateBoardById(boardDto);
       }
       if (result) {
@@ -82,14 +122,14 @@ public class BoardController {
   }
 
   @DeleteMapping({"/{id}", ""})
-  public ResponseEntity<?> deleteTodoById(@PathVariable(value="id", required = false) Long id) {
+  public ResponseEntity<?> deleteBoardById(@PathVariable(value="id", required = false) Long id) {
     try {
       boolean result = false;
       if(id == null) {
         log.info("deleteAll");
         result = boardService.deleteAll();
       } else {
-        log.info("deleteTodoById");
+        log.info("deleteBoardById");
         result = boardService.deleteBoardById(id);
       }
       if (!result) {

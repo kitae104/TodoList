@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 class BoardServiceTest {
 
@@ -20,7 +18,7 @@ class BoardServiceTest {
               .content("내용" + i)
               .writer("작성자" + i)
               .build();
-      boardService.addBoard(boardDto);
+      boardService.insertBoard(boardDto);
     }
   }
 

@@ -1,5 +1,6 @@
 package kitae.spring.project.file.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import kitae.spring.project.file.dto.FileDto;
 import kitae.spring.project.file.entity.FileEntity;
 import kitae.spring.project.file.service.FileService;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -103,6 +105,15 @@ public class FileController {
       }
     } catch (Exception e) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @GetMapping("/download/{id}")
+  public void fileDownload(@PathVariable("id") Long id, HttpServletResponse response) {
+    try {
+      fileService.fileDownload(id, response);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 }

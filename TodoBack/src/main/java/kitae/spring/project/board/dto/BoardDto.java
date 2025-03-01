@@ -6,6 +6,7 @@ import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,5 +21,8 @@ public class BoardDto {
   private String content;
   private LocalDateTime regTime;
   private LocalDateTime updateTime;
+
+  private MultipartFile mainFile;
+  private List<MultipartFile> fileList;
 
 }

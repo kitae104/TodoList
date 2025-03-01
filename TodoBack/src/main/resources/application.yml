@@ -56,12 +56,13 @@ spring:
 # File Upload
 ####################################
 imgLocation: D:/upload/item/    # 서버 내부에서 이미지가 저장될 실제 디렉토리 경로(파일 저장 경로)
-uploadPath: file:///D:/upload/      # 외부에서 이미지에 접근할 수 있는 URL 경로(파일 업로드 경로)
+uploadPath: D:/upload      # 외부에서 이미지에 접근할 수 있는 URL 경로(파일 업로드 경로)
 
 ####################################
 # Log
 ####################################
 logging:
+  config: classpath:logback-spring.xml
   level:
     org:
       hibernate:

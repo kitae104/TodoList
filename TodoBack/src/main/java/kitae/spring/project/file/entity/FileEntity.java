@@ -39,6 +39,6 @@ public class FileEntity extends BaseEntity {
   @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
   private Long fileSize; // 파일 크기
 
-  @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
-  private Long seq; // 순서
+  @Column(nullable = false)
+  private Long seq = 0L; // 순서
 }
