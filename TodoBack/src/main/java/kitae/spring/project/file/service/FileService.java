@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -68,8 +69,32 @@ public class FileService {
   }
 
   public boolean deleteFileById(Long id) {
+    // 파일 삭제
+    if(!deleteFile(id)){
+      return false;
+    }
+    // DB 삭제
     fileRepository.deleteById(id);
     return true;
+  }
+
+  // 해당 파일 지우기
+  private boolean deleteFile(Long id) {
+    FileDto fileDto = getFileById(id);
+    String filePath = fileDto.getFilePath();
+    File deleteFile = new File(filePath);
+    if(!deleteFile.exists()) {
+      log.info("파일이 존재하지 않습니다. filePath = " + filePath);
+      return false;
+    }
+    boolean deleted = deleteFile.delete();
+    if(!deleted) {
+      log.info("파일 삭제 실패. filePath = " + filePath);
+      return false;
+    } else {
+      log.info("파일 삭제 성공. filePath = " + filePath);
+      return true;
+    }
   }
 
   // 부모 테이블과 부모 번호로 파일 목록 조회
@@ -83,6 +108,13 @@ public class FileService {
 
   // 부모 테이블과 부모 번호로 파일 목록 삭제
   public int deleteByParent(FileDto fileDto){
+    List<FileDto> fileDtoList = listByParent(fileDto);
+
+    // 파일 삭제
+    for(FileDto file : fileDtoList) {
+      deleteFile(file.getId());
+    }
+    // DB 삭제
     return fileRepository.deleteByParent(fileDto.getParentTable(), fileDto.getParentNo());
   }
 
@@ -160,7 +192,7 @@ public class FileService {
     // 파일 다운로드 응답 헤더 세팅
     // - Content-Type           : applcation/octet-stream
     // - Content-Disposition    : attachment; filename="파일명.확장자"
-    // ⚡ 한글 파일명 인코딩(한글 파일 다운로드 시 깨짐 방지)
+    // 한글 파일명 인코딩(한글 파일 다운로드 시 깨짐 방지)
     originName = URLEncoder.encode(originName, "UTF-8");
     response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
     response.setHeader("Content-Disposition", "attachment; filename=\"" + originName + "\"");
@@ -171,5 +203,18 @@ public class FileService {
     fis.close();
     sos.close();
     return result;
+  }
+
+  // 여러 파일 지우기
+  public boolean deleteFilesByIdList(List<Long> idList) {
+    if(idList == null || idList.isEmpty()) {
+      return false;
+    }
+    // 파일 삭제
+    for (Long id : idList) {
+      deleteFile(id);
+    }
+    // DB 삭제
+    return fileRepository.deleteFilesById(idList) > 0;
   }
 }

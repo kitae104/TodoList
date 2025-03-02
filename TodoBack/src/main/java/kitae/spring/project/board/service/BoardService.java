@@ -122,6 +122,14 @@ public class BoardService {
 
   public boolean deleteBoardById(Long id) {
     boardRepository.deleteById(id);
+
+    // 첨부 파일 삭제(부모 테이블과 부모 번호로 파일 목록 삭제)
+    FileDto fileDto = FileDto.builder()
+            .parentTable("board")
+            .parentNo(id)
+            .build();
+    int deletedCount = fileService.deleteByParent(fileDto);
+    log.info(deletedCount + "건의 파일 삭제 완료");
     return true;
   }
 }
