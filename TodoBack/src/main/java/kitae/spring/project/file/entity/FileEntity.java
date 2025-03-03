@@ -1,6 +1,7 @@
 package kitae.spring.project.file.entity;
 
 import jakarta.persistence.*;
+import kitae.spring.project.board.entity.Board;
 import kitae.spring.project.common.entity.BaseEntity;
 import lombok.*;
 
@@ -41,4 +42,7 @@ public class FileEntity extends BaseEntity {
 
   @Column(nullable = false)
   private Long seq = 0L; // 순서
+
+  @OneToOne(mappedBy = "file", fetch = FetchType.LAZY)
+  private Board board;
 }

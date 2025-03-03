@@ -32,6 +32,9 @@ public class BoardService {
   public Page<BoardDto> getBoardList(int page, int size) {
     Pageable pageable = PageRequest.of(page, size, Sort.by("regTime").descending()); // pageable 객체 생성
     Page<Board> boardListPage = boardRepository.findAll(pageable);
+    for (Board board : boardListPage) {
+      log.info("board: " + board);
+    }
     Page<BoardDto> boardDtoListPage = boardListPage.map(board -> modelMapper.map(board, BoardDto.class));
 
     // status, seq 순으로 정렬

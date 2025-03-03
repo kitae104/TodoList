@@ -24,4 +24,9 @@ public interface FileRepository extends JpaRepository<FileEntity, Long> {
   @Transactional
   @Query("DELETE FROM FileEntity f WHERE f.id IN :idList")
   public int deleteFilesById(@Param("idList") List<Long> idList);
+
+  @Query("SELECT f FROM FileEntity f WHERE f.parentNo=:id AND f.parentTable = 'board' AND f.type = 'MAIN'")
+  public FileEntity selectMainFile(@Param("id") Long id);
+
+
 }

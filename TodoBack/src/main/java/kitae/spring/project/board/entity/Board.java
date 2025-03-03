@@ -2,6 +2,7 @@ package kitae.spring.project.board.entity;
 
 import jakarta.persistence.*;
 import kitae.spring.project.common.entity.BaseEntity;
+import kitae.spring.project.file.entity.FileEntity;
 import lombok.*;
 
 @Entity
@@ -25,4 +26,8 @@ public class Board extends BaseEntity {
 
     @Lob
     private String content;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "file_id")
+    private FileEntity file;
 }
