@@ -118,7 +118,7 @@ public class FileController {
   }
 
   @DeleteMapping("")
-  public ResponseEntity<?> deleteFilesByIdList(@RequestParam(value = "idList") List<Long> idList) {
+  public ResponseEntity<?> deleteFilesByIdList(@RequestBody List<Long> idList) {
     log.info("idList = " + idList);
     try {
       boolean result = false;
