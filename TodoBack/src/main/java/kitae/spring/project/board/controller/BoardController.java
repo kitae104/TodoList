@@ -26,7 +26,12 @@ public class BoardController {
   private final BoardService boardService;
   private final FileService fileService;
 
-  // 게시판 리스트 조회
+  /**
+   * 게시판 리스트 조회
+   * @param page
+   * @param size
+   * @return
+   */
   @GetMapping("")
   public ResponseEntity<?> getBoardList(
           @RequestParam(defaultValue = "0") int page, // 현재 페이지
@@ -40,7 +45,11 @@ public class BoardController {
     }
   }
 
-  // 게시판 상세 조회
+  /**
+   * 게시판 상세 조회
+   * @param id
+   * @return
+   */
   @GetMapping("/{id}")
   public ResponseEntity<?> getBoardById(@PathVariable Long id) {
     try {

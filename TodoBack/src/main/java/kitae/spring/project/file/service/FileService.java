@@ -2,6 +2,9 @@ package kitae.spring.project.file.service;
 
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import kitae.spring.project.board.dto.BoardDto;
+import kitae.spring.project.board.entity.Board;
+import kitae.spring.project.board.repository.BoardRepository;
 import kitae.spring.project.file.dto.FileDto;
 import kitae.spring.project.file.entity.FileEntity;
 import kitae.spring.project.file.entity.FileType;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,6 +38,7 @@ public class FileService {
   private String uploadPath;
 
   private final FileRepository fileRepository;
+  private final BoardRepository boardRepository;
   private final ModelMapper modelMapper;
 
   public List<FileEntity> getFileList() {
@@ -134,26 +139,29 @@ public class FileService {
     byte[] fileData = file.getBytes();
     String newFileName = UUID.randomUUID().toString() + "_" + originName;
     String filePath = uploadPath + "/" + newFileName;
-//    log.info("filePath = " + filePath);
+    log.info("filePath = " + filePath);
     File uploadFile = new File(filePath);
     FileCopyUtils.copy(fileData, uploadFile); // 파일 복사
 
+    Board board = boardRepository.findById(fileDto.getParentNo())
+        .orElseThrow(() -> new RuntimeException("해당 게시글이 존재하지 않습니다."));
     // DB에 등록
     FileEntity fileEntity = FileEntity.builder()
             .parentTable(fileDto.getParentTable())
             .parentNo(fileDto.getParentNo())
-            .type(fileDto.getType() == "MAIN" ? FileType.MAIN : FileType.SUB)
+            .type(fileDto.getType().equals("MAIN") ? FileType.MAIN : FileType.SUB)
             .fileName(newFileName)
             .originName(originName)
             .filePath(filePath)
             .fileSize(fileSize)
             .seq(fileDto.getSeq())
+            .board(board)
             .build();
-//    log.info("fileEntity = " + fileEntity);
+    log.info("fileEntity = " + fileEntity);
     FileEntity savedFile = null;
     try{
       savedFile = fileRepository.save(fileEntity);
-//      log.info("savedFile = " + savedFile);
+      log.info("savedFile = " + savedFile);
     } catch (Exception e) {
       log.error(e.getMessage());
     }
@@ -216,5 +224,14 @@ public class FileService {
     }
     // DB 삭제
     return fileRepository.deleteFilesById(idList) > 0;
+  }
+
+  @Transactional(readOnly = true)
+  public List<FileDto> getFilesByBoardId(Long boardId) {
+    List<FileEntity> fileList = fileRepository.findByIdWithFile(boardId);
+    List<FileDto> fileDtoList = fileList.stream()
+        .map(file -> modelMapper.map(file, FileDto.class))
+        .toList();
+    return fileDtoList;
   }
 }

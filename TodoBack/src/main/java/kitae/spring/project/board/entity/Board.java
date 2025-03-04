@@ -5,10 +5,12 @@ import kitae.spring.project.common.entity.BaseEntity;
 import kitae.spring.project.file.entity.FileEntity;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -27,7 +29,7 @@ public class Board extends BaseEntity {
     @Lob
     private String content;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "file_id")
-    private FileEntity file;
+    // Board가 삭제될 때 관련된 파일도 함께 삭제됨
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FileEntity> files;
 }

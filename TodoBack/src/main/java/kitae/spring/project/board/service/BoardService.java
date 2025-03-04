@@ -32,6 +32,7 @@ public class BoardService {
   public Page<BoardDto> getBoardList(int page, int size) {
     Pageable pageable = PageRequest.of(page, size, Sort.by("regTime").descending()); // pageable 객체 생성
     Page<Board> boardListPage = boardRepository.findAll(pageable);
+    log.info("boardListPage: " + boardListPage.getSize());
     for (Board board : boardListPage) {
       log.info("board: " + board);
     }
@@ -89,7 +90,7 @@ public class BoardService {
         }
       }
       int result = 0;
-//      log.info("uploadFileList: " + uploadFileList);
+      log.info("uploadFileList: " + uploadFileList);
       try {
         result += fileService.fileUpload(uploadFileList);
       } catch (IOException e) {

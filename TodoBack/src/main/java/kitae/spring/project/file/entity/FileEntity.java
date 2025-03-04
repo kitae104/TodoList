@@ -43,6 +43,7 @@ public class FileEntity extends BaseEntity {
   @Column(nullable = false)
   private Long seq = 0L; // 순서
 
-  @OneToOne(mappedBy = "file", fetch = FetchType.LAZY)
-  private Board board;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "board_id", nullable = false)
+  private Board board;  // 게시판과 다대일 관계
 }

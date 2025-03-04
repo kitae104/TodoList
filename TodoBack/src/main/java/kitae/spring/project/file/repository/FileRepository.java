@@ -28,5 +28,7 @@ public interface FileRepository extends JpaRepository<FileEntity, Long> {
   @Query("SELECT f FROM FileEntity f WHERE f.parentNo=:id AND f.parentTable = 'board' AND f.type = 'MAIN'")
   public FileEntity selectMainFile(@Param("id") Long id);
 
+  @Query("SELECT f FROM FileEntity f WHERE f.board.id = :id")
+  List<FileEntity> findByIdWithFile(@Param("id") Long id);
 
 }
