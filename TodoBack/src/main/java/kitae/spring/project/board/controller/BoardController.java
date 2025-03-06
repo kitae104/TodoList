@@ -58,7 +58,7 @@ public class BoardController {
       // 파일 리스트 조회
       FileDto fileDto = new FileDto();
       fileDto.setParentTable("board");
-      fileDto.setParentNo(boardDto.getId());
+      fileDto.setParentId(boardDto.getId());
       List<FileDto> fileList = fileService.listByParent(fileDto);
       Map<String, Object> response = new HashMap<>();
       response.put("board", boardDto);
@@ -107,8 +107,31 @@ public class BoardController {
     }
   }
 
-  @PutMapping("/{id}")
-  public ResponseEntity<?> updateBoard(@RequestBody BoardDto boardDto) {
+  @PutMapping(value ="", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> updateBoardJson(@RequestBody BoardDto boardDto) {
+    log.info("BoardDto = " + boardDto);
+    try {
+      Long id = boardDto.getId();
+      boolean result = false;
+
+      if(id == null) {
+        throw new IllegalArgumentException("id is null");
+      } else {
+        log.info("updateBoardById");
+        result = boardService.updateBoardById(boardDto);
+      }
+      if (result) {
+        return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+      } else {
+        return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
+      }
+    } catch (Exception e) {
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @PutMapping(value ="", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<?> updateBoardForm(BoardDto boardDto) {
     log.info("BoardDto = " + boardDto);
     try {
       Long id = boardDto.getId();

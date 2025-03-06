@@ -8,7 +8,7 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
-@ToString
+//@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -22,7 +22,7 @@ public class FileEntity extends BaseEntity {
   private String parentTable;  // 부모 테이블명
 
   @Column(nullable = false)
-  private Long parentNo; // 부모 테이블의 PK
+  private Long parentId; // 부모 테이블의 PK
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, columnDefinition = "VARCHAR(10) DEFAULT 'SUB'")
@@ -41,7 +41,7 @@ public class FileEntity extends BaseEntity {
   private Long fileSize; // 파일 크기
 
   @Column(nullable = false)
-  private Long seq = 0L; // 순서
+  private Long seq; // 순서
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "board_id", nullable = false)

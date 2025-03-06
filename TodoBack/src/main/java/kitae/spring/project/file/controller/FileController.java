@@ -33,15 +33,9 @@ public class FileController {
   private final ResourceLoader resourceLoader;
 
   @GetMapping("")
-  public ResponseEntity<?> getFileLists(
-//          @RequestParam(defaultValue = "0") int page, // 현재 페이지
-//          @RequestParam(defaultValue = "10") int size // 크기
-  ) {
+  public ResponseEntity<?> getFileLists() {
     try {
-      List<FileEntity> fileList = fileService.getFileList();
-      List<FileDto> fileDtoList = fileList.stream()
-              .map(file -> modelMapper.map(file, FileDto.class))
-              .toList();
+      List<FileDto> fileDtoList = fileService.getFileList();
       return new ResponseEntity<>(fileDtoList, HttpStatus.OK);
     } catch (Exception e) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -185,5 +179,48 @@ public class FileController {
     FileCopyUtils.copy(fis, sos);
     fis.close();
     sos.close();
+  }
+
+  /**
+   * 파일 리스트 조회
+   * @param parentTable
+   * @param parentId
+   * @param type
+   * @return
+   */
+  @GetMapping("/{parentTable}/{parentId}")
+  public ResponseEntity<?> getFileLists(
+    @PathVariable(value="parentTable") String parentTable,
+    @PathVariable(value="parentId") Long parentId,
+    @RequestParam(value="type", required = false) String type
+  ) {
+    try {
+      FileDto fileDto = FileDto.builder()
+              .parentTable(parentTable)
+              .parentId(parentId)
+              .type(type)
+              .build();
+
+      log.info("fileDto = " + fileDto);
+
+      // type이 null인 경우 전체 파일 리스트 조회
+      if(type == null) {
+        List<FileDto> fileDtoList = fileService.listByParent(fileDto);
+        return new ResponseEntity<>(fileDtoList, HttpStatus.OK);
+      }
+      // type이 MAIN인 경우 메인 파일 조회
+      if(type.equals("MAIN")){
+        FileDto mainFile = fileService.selectByType(fileDto);
+        log.info("mainFile = " + mainFile);
+        return new ResponseEntity<>(mainFile, HttpStatus.OK);
+      }
+      // type이 SUB인 경우 서브 파일 조회
+      else {
+        List<FileDto> fileDtoList = fileService.listByType(fileDto);
+        return new ResponseEntity<>(fileDtoList, HttpStatus.OK);
+      }
+    } catch (Exception e) {
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

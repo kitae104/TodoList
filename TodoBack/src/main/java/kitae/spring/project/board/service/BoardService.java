@@ -44,60 +44,80 @@ public class BoardService {
 //            .thenComparing(BoardDto::getSeq)) // seq 기준 오름차순
             .collect(Collectors.toList());
 
+    for (BoardDto boardDto : sortedList) {
+      FileEntity mainFile = fileService.getMainFile(boardDto.getId());
+      FileDto mainFileDto = modelMapper.map(mainFile, FileDto.class);
+      boardDto.setFile(mainFileDto);
+    }
+
     // 새로운 Page 객체 반환 (페이지 정보 유지)
     return new PageImpl<>(sortedList, boardDtoListPage.getPageable(), boardDtoListPage.getTotalElements());
   }
 
   @Transactional
   public boolean insertBoard(BoardDto boardDto) {
+    // 게시글 저장
     Board board = modelMapper.map(boardDto, Board.class);
     Board savedBoard = boardRepository.save(board);
-//    log.info("savedBoard: " + savedBoard);
     if(savedBoard == null) {
       return false;
     } else {
-      String parentTable = "board";
-      Long parentNo = savedBoard.getId();
-
-      List<FileDto> uploadFileList = new ArrayList();
-
-      MultipartFile mainFile = boardDto.getMainFile();
-      if(mainFile != null && !mainFile.isEmpty()) {
-        FileDto mainFileDto = FileDto.builder()
-                .parentTable(parentTable)
-                .parentNo(parentNo)
-                .type("MAIN")
-                .file(mainFile)
-                .seq(0L)
-                .build();
-        uploadFileList.add(mainFileDto);
-      }
-
-      List<MultipartFile> fileList = boardDto.getFileList();
-      if(fileList != null && !fileList.isEmpty()) {
-        for(MultipartFile file : fileList) {
-          if(file.isEmpty()) {
-            continue;
-          }
-          FileDto fileDto = FileDto.builder()
-                  .parentTable(parentTable)
-                  .parentNo(parentNo)
-                  .type("SUB")
-                  .file(file)
-                  .seq(0L)
-                  .build();
-          uploadFileList.add(fileDto);
-        }
-      }
-      int result = 0;
-      log.info("uploadFileList: " + uploadFileList);
-      try {
-        result += fileService.fileUpload(uploadFileList);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+      // 첨부 파일 저장
+      int result = fileUpload(boardDto, savedBoard);
       return result > 0;
     }
+  }
+
+  /**
+   * 파일 업로드 처리
+   * @param boardDto
+   * @param savedBoard
+   * @return
+   */
+  private int fileUpload(BoardDto boardDto, Board savedBoard) {
+    String parentTable = "board";
+    Long parentId = savedBoard.getId();
+
+    List<FileDto> uploadFileList = new ArrayList();
+
+    // 메인 파일 저장
+    MultipartFile mainFile = boardDto.getMainFile();
+    if(mainFile != null && !mainFile.isEmpty()) {
+      FileDto mainFileDto = FileDto.builder()
+              .parentTable(parentTable)
+              .parentId(parentId)
+              .type("MAIN")
+              .file(mainFile)
+              .seq(0L)
+              .build();
+      uploadFileList.add(mainFileDto);
+    }
+
+    // 서브 파일 저장
+    List<MultipartFile> fileList = boardDto.getFileList();
+    if(fileList != null && !fileList.isEmpty()) {
+      for(MultipartFile file : fileList) {
+        if(file.isEmpty()) {
+          continue;
+        }
+        FileDto fileDto = FileDto.builder()
+                .parentTable(parentTable)
+                .parentId(parentId)
+                .type("SUB")
+                .file(file)
+                .seq(0L)
+                .build();
+        uploadFileList.add(fileDto);
+      }
+    }
+    int result = 0;
+    log.info("uploadFileList: " + uploadFileList);
+    try {
+      result += fileService.fileUpload(uploadFileList);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    return result;
   }
 
   public BoardDto getBoardById(Long id) {
@@ -115,6 +135,8 @@ public class BoardService {
     if(updatedBoard == null) {
       return false;
     } else {
+      // 첨부 파일 저장
+      int result = fileUpload(boardDto, updatedBoard);
       return true;
     }
   }
@@ -130,7 +152,7 @@ public class BoardService {
     // 첨부 파일 삭제(부모 테이블과 부모 번호로 파일 목록 삭제)
     FileDto fileDto = FileDto.builder()
             .parentTable("board")
-            .parentNo(id)
+            .parentId(id)
             .build();
     int deletedCount = fileService.deleteByParent(fileDto);
     log.info(deletedCount + "건의 파일 삭제 완료");

@@ -41,9 +41,12 @@ public class FileService {
   private final BoardRepository boardRepository;
   private final ModelMapper modelMapper;
 
-  public List<FileEntity> getFileList() {
-
-    return fileRepository.findAll(Sort.by(Sort.Direction.DESC, "regTime"));
+  public List<FileDto> getFileList() {
+    List<FileEntity> fileList = fileRepository.findAll(Sort.by(Sort.Direction.DESC, "regTime"));
+    List<FileDto> fileDtoList = fileList.stream()
+            .map(file -> modelMapper.map(file, FileDto.class))
+            .toList();
+    return fileDtoList;
   }
 
   public boolean insertFile(FileDto fileDto) {
@@ -104,7 +107,7 @@ public class FileService {
 
   // 부모 테이블과 부모 번호로 파일 목록 조회
   public List<FileDto> listByParent(FileDto fileDto) {
-    List<FileEntity> fileEntityList = fileRepository.findByParent(fileDto.getParentTable(), fileDto.getParentNo());
+    List<FileEntity> fileEntityList = fileRepository.findByParent(fileDto.getParentTable(), fileDto.getParentId());
     List<FileDto> fileDtoList = fileEntityList.stream()
             .map(fileEntity -> modelMapper.map(fileEntity, FileDto.class))
             .toList();
@@ -120,7 +123,7 @@ public class FileService {
       deleteFile(file.getId());
     }
     // DB 삭제
-    return fileRepository.deleteByParent(fileDto.getParentTable(), fileDto.getParentNo());
+    return fileRepository.deleteByParent(fileDto.getParentTable(), fileDto.getParentId());
   }
 
   // 단일 파일 업로드
@@ -143,12 +146,12 @@ public class FileService {
     File uploadFile = new File(filePath);
     FileCopyUtils.copy(fileData, uploadFile); // 파일 복사
 
-    Board board = boardRepository.findById(fileDto.getParentNo())
+    Board board = boardRepository.findById(fileDto.getParentId())
         .orElseThrow(() -> new RuntimeException("해당 게시글이 존재하지 않습니다."));
     // DB에 등록
     FileEntity fileEntity = FileEntity.builder()
             .parentTable(fileDto.getParentTable())
-            .parentNo(fileDto.getParentNo())
+            .parentId(fileDto.getParentId())
             .type(fileDto.getType().equals("MAIN") ? FileType.MAIN : FileType.SUB)
             .fileName(newFileName)
             .originName(originName)
@@ -233,5 +236,26 @@ public class FileService {
         .map(file -> modelMapper.map(file, FileDto.class))
         .toList();
     return fileDtoList;
+  }
+
+  public FileDto selectByType(FileDto fileDto) {
+    log.info("여기 !!! ============fileDto = " + fileDto);
+    FileEntity fileEntity = fileRepository.selectByType(fileDto.getParentTable(), fileDto.getParentId(), fileDto.getType().equals("MAIN") ? FileType.MAIN : FileType.SUB );
+    log.info("============fileEntity = " + fileEntity);
+    FileDto fileDto2 = modelMapper.map(fileEntity, FileDto.class);
+    log.info("============fileDto = " + fileDto2);
+    return fileDto2;
+  }
+
+  public List<FileDto> listByType(FileDto fileDto) {
+    List<FileEntity> fileEntityList = fileRepository.listByType(fileDto.getParentTable(), fileDto.getParentId(), fileDto.getType().equals("MAIN") ? FileType.MAIN : FileType.SUB );
+    List<FileDto> fileDtoList = fileEntityList.stream()
+            .map(fileEntity -> modelMapper.map(fileEntity, FileDto.class))
+            .toList();
+    return fileDtoList;
+  }
+
+  public FileEntity getMainFile(Long id) {
+    return fileRepository.selectMainFile(id);
   }
 }

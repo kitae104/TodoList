@@ -2,6 +2,7 @@ package kitae.spring.project.board.dto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Lob;
+import kitae.spring.project.file.dto.FileDto;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,4 +26,5 @@ public class BoardDto {
   private MultipartFile mainFile;
   private List<MultipartFile> fileList;
 
+  private FileDto file;
 }
