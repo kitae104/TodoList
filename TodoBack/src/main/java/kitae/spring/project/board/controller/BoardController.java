@@ -35,7 +35,7 @@ public class BoardController {
   @GetMapping("")
   public ResponseEntity<?> getBoardList(
           @RequestParam(defaultValue = "0") int page, // 현재 페이지
-          @RequestParam(defaultValue = "10") int size // 크기
+          @RequestParam(defaultValue = "3") int size // 크기
   ) {
     try {
       Page<BoardDto> boardDtoList = boardService.getBoardList(page, size);
