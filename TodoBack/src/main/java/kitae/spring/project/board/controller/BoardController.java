@@ -34,11 +34,13 @@ public class BoardController {
    */
   @GetMapping("")
   public ResponseEntity<?> getBoardList(
-          @RequestParam(defaultValue = "0") int page, // 현재 페이지
-          @RequestParam(defaultValue = "3") int size // 크기
+          @RequestParam(value = "page", required = false, defaultValue = "0") int page, // 현재 페이지
+          @RequestParam(value = "size", required = false, defaultValue = "5") int size // 크기
   ) {
+    log.info("getBoardList page : " + page + ", size : " + size);
     try {
-      Page<BoardDto> boardDtoList = boardService.getBoardList(page, size);
+      Page<BoardDto> boardDtoList = boardService.getBoardList(page-1, size);
+      log.info("boardDtoList: " + boardDtoList);
       return new ResponseEntity<>(boardDtoList, HttpStatus.OK);
     } catch (Exception e) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

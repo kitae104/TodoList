@@ -32,7 +32,6 @@ public class BoardService {
   public Page<BoardDto> getBoardList(int page, int size) {
     Pageable pageable = PageRequest.of(page, size, Sort.by("regTime").descending()); // pageable 객체 생성
     Page<Board> boardListPage = boardRepository.findAll(pageable);
-    log.info("boardListPage: " + boardListPage.getSize());
     for (Board board : boardListPage) {
       log.info("board: " + board);
     }
